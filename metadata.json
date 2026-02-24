@@ -1,0 +1,5 @@
+{
+  "name": "MQTT Sensor Dashboard",
+  "description": "Real-time MQTT sensor data visualization dashboard",
+  "requestFramePermissions": []
+}
