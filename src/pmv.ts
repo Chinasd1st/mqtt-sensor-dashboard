@@ -97,20 +97,20 @@ export const calculatePMV = (ta: number, rh: number, options: PMVOptions = {}): 
   const ppd = Math.round(ppdVal * 10) / 10; // Round to 1 decimal
 
   // Status determination based on ASHRAE 55
-  let status = 'Comfortable';
+  let status = 'comfortable';
   let color = 'text-emerald-600 dark:text-emerald-400';
   let bg = 'bg-emerald-500/10 dark:bg-emerald-400/10';
 
   if (pmv > 0.5) {
-    if (pmv > 3) { status = 'Hot'; color = 'text-rose-600 dark:text-rose-400'; bg = 'bg-rose-500/10 dark:bg-rose-400/10'; }
-    else if (pmv > 2) { status = 'Warm'; color = 'text-red-600 dark:text-red-400'; bg = 'bg-red-500/10 dark:bg-red-400/10'; }
-    else if (pmv > 1) { status = 'Slightly Warm'; color = 'text-orange-600 dark:text-orange-400'; bg = 'bg-orange-500/10 dark:bg-orange-400/10'; }
-    else { status = 'Neutral (+)'; color = 'text-emerald-600 dark:text-emerald-400'; bg = 'bg-emerald-500/10 dark:bg-emerald-400/10'; }
+    if (pmv > 3) { status = 'hot'; color = 'text-rose-600 dark:text-rose-400'; bg = 'bg-rose-500/10 dark:bg-rose-400/10'; }
+    else if (pmv > 2) { status = 'warm'; color = 'text-red-600 dark:text-red-400'; bg = 'bg-red-500/10 dark:bg-red-400/10'; }
+    else if (pmv > 1) { status = 'slightly_warm'; color = 'text-orange-600 dark:text-orange-400'; bg = 'bg-orange-500/10 dark:bg-orange-400/10'; }
+    else { status = 'neutral_plus'; color = 'text-emerald-600 dark:text-emerald-400'; bg = 'bg-emerald-500/10 dark:bg-emerald-400/10'; }
   } else if (pmv < -0.5) {
-    if (pmv < -3) { status = 'Cold'; color = 'text-blue-800 dark:text-blue-300'; bg = 'bg-blue-800/10 dark:bg-blue-300/10'; }
-    else if (pmv < -2) { status = 'Cool'; color = 'text-blue-600 dark:text-blue-400'; bg = 'bg-blue-500/10 dark:bg-blue-400/10'; }
-    else if (pmv < -1) { status = 'Slightly Cool'; color = 'text-cyan-600 dark:text-cyan-400'; bg = 'bg-cyan-500/10 dark:bg-cyan-400/10'; }
-    else { status = 'Neutral (-)'; color = 'text-emerald-600 dark:text-emerald-400'; bg = 'bg-emerald-500/10 dark:bg-emerald-400/10'; }
+    if (pmv < -3) { status = 'cold'; color = 'text-blue-800 dark:text-blue-300'; bg = 'bg-blue-800/10 dark:bg-blue-300/10'; }
+    else if (pmv < -2) { status = 'cool'; color = 'text-blue-600 dark:text-blue-400'; bg = 'bg-blue-500/10 dark:bg-blue-400/10'; }
+    else if (pmv < -1) { status = 'slightly_cool'; color = 'text-cyan-600 dark:text-cyan-400'; bg = 'bg-cyan-500/10 dark:bg-cyan-400/10'; }
+    else { status = 'neutral_minus'; color = 'text-emerald-600 dark:text-emerald-400'; bg = 'bg-emerald-500/10 dark:bg-emerald-400/10'; }
   }
 
   return { pmv, ppd, status, color, bg };

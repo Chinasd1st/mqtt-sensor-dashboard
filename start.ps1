@@ -38,8 +38,8 @@ if (Test-Path $reactFolder) {
 }
 
 Write-Host "`nStartup commands sent!" -ForegroundColor Cyan
-Write-Host "→ Mosquitto should now start correctly (watch for its own window or logs)"
-Write-Host "→ React dev server usually opens at http://localhost:3000"
+Write-Host "Mosquitto should now start correctly (watch for its own window or logs)"
+Write-Host "React dev server usually opens at http://localhost:3000"
 Write-Host "Use Ctrl+C in each window to stop the services`n"
 
 pause
