@@ -36,24 +36,13 @@ export const useMQTT = () => {
         humidity: current.humidity ? { ...current.humidity, value: current.humidity.value + offsets.humidity } : undefined,
         co2: current.co2 ? { ...current.co2, value: current.co2.value + offsets.co2 } : undefined,
         pm25: current.pm25 ? { ...current.pm25, value: current.pm25.value + offsets.pm25 } : undefined,
+        pm10: current.pm10 ? { ...current.pm10, value: current.pm10.value + offsets.pm10 } : undefined,
       };
 
       setSensorData(calibratedData);
       if (setLastUpdated) setLastUpdated(new Date());
       
-      // Threshold Alerts Logic
-      const checkThreshold = (val: number, t: { warning: number; critical: number; emergency: number }, type: string, inverted = false) => {
-        let currentLevel = 'normal';
-        if (inverted) {
-          if (val <= t.emergency) currentLevel = 'emergency';
-          else if (val <= t.critical) currentLevel = 'critical';
-          else if (val <= t.warning) currentLevel = 'warning';
-        } else {
-          if (val >= t.emergency) currentLevel = 'emergency';
-          else if (val >= t.critical) currentLevel = 'critical';
-          else if (val >= t.warning) currentLevel = 'warning';
-        }
-
+      const triggerAlert = (currentLevel: string, type: string, val: number) => {
         if (currentLevel !== 'normal' && lastAlertsRef.current[type] !== currentLevel) {
           lastAlertsRef.current[type] = currentLevel;
           const message = `${currentLevel.charAt(0).toUpperCase() + currentLevel.slice(1)}: ${type.toUpperCase()} ${currentLevel === 'emergency' ? `at ${val}!` : currentLevel === 'critical' ? `Critical (${val})` : `Warning (${val})`}`;
@@ -82,11 +71,35 @@ export const useMQTT = () => {
         }
       };
 
+      // Threshold Alerts Logic
+      const checkThreshold = (val: number, t: { warning: number; critical: number; emergency: number }, type: string, inverted = false) => {
+        let currentLevel = 'normal';
+        if (inverted) {
+          if (val <= t.emergency) currentLevel = 'emergency';
+          else if (val <= t.critical) currentLevel = 'critical';
+          else if (val <= t.warning) currentLevel = 'warning';
+        } else {
+          if (val >= t.emergency) currentLevel = 'emergency';
+          else if (val >= t.critical) currentLevel = 'critical';
+          else if (val >= t.warning) currentLevel = 'warning';
+        }
+        triggerAlert(currentLevel, type, val);
+      };
+
+      const checkThresholdRange = (val: number, t: { warningHigh: number; criticalHigh: number; emergencyHigh: number; warningLow: number; criticalLow: number; emergencyLow: number }, type: string) => {
+        let currentLevel = 'normal';
+        if (val >= t.emergencyHigh || val <= t.emergencyLow) currentLevel = 'emergency';
+        else if (val >= t.criticalHigh || val <= t.criticalLow) currentLevel = 'critical';
+        else if (val >= t.warningHigh || val <= t.warningLow) currentLevel = 'warning';
+        triggerAlert(currentLevel, type, val);
+      };
+
       if (calibratedData.co2) checkThreshold(calibratedData.co2.value, thresholds.co2 || { warning: 1000, critical: 1500, emergency: 2500 }, 'co2');
       if (calibratedData.pm25) checkThreshold(calibratedData.pm25.value, thresholds.pm25 || { warning: 35, critical: 75, emergency: 150 }, 'pm25');
+      if (calibratedData.pm10) checkThreshold(calibratedData.pm10.value, thresholds.pm10 || { warning: 50, critical: 150, emergency: 250 }, 'pm10');
       if (calibratedData.tvoc) checkThreshold(calibratedData.tvoc.value, thresholds.tvoc || { warning: 300, critical: 600, emergency: 1000 }, 'tvoc');
-      if (calibratedData.temperature) checkThreshold(calibratedData.temperature.value, thresholds.temperature || { warning: 30, critical: 35, emergency: 40 }, 'temperature');
-      if (calibratedData.humidity) checkThreshold(calibratedData.humidity.value, thresholds.humidity || { warning: 70, critical: 80, emergency: 90 }, 'humidity');
+      if (calibratedData.temperature) checkThresholdRange(calibratedData.temperature.value, thresholds.temperature || { warningHigh: 30, criticalHigh: 35, emergencyHigh: 40, warningLow: 15, criticalLow: 10, emergencyLow: 5 }, 'temperature');
+      if (calibratedData.humidity) checkThresholdRange(calibratedData.humidity.value, thresholds.humidity || { warningHigh: 70, criticalHigh: 80, emergencyHigh: 90, warningLow: 30, criticalLow: 20, emergencyLow: 10 }, 'humidity');
       if (calibratedData.battery) checkThreshold(calibratedData.battery.value, thresholds.battery || { warning: 20, critical: 10, emergency: 5 }, 'battery', true);
 
       const pmvData = calculatePMV(calibratedData.temperature?.value || 0, calibratedData.humidity?.value || 0);
@@ -94,6 +107,7 @@ export const useMQTT = () => {
         time: new Date().toLocaleTimeString(),
         co2: calibratedData.co2?.value || 0,
         pm25: calibratedData.pm25?.value || 0,
+        pm10: calibratedData.pm10?.value || 0,
         temperature: calibratedData.temperature?.value || 0,
         humidity: calibratedData.humidity?.value || 0,
         tvoc: calibratedData.tvoc?.value || 0,

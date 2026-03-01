@@ -27,6 +27,7 @@ export interface HistoryPoint {
   time: string;
   co2: number;
   pm25: number;
+  pm10: number;
   temperature: number;
   humidity: number;
   tvoc: number;
@@ -45,9 +46,16 @@ export interface AlertItem {
 export interface Thresholds {
   co2: { warning: number; critical: number; emergency: number };
   pm25: { warning: number; critical: number; emergency: number };
+  pm10: { warning: number; critical: number; emergency: number };
   tvoc: { warning: number; critical: number; emergency: number };
-  temperature: { warning: number; critical: number; emergency: number };
-  humidity: { warning: number; critical: number; emergency: number };
+  temperature: { 
+    warningHigh: number; criticalHigh: number; emergencyHigh: number;
+    warningLow: number; criticalLow: number; emergencyLow: number;
+  };
+  humidity: { 
+    warningHigh: number; criticalHigh: number; emergencyHigh: number;
+    warningLow: number; criticalLow: number; emergencyLow: number;
+  };
   battery: { warning: number; critical: number; emergency: number };
 }
 
@@ -56,10 +64,20 @@ export interface CalibrationOffsets {
   humidity: number;
   co2: number;
   pm25: number;
+  pm10: number;
 }
 
 export interface ZenModeConfig {
   active: boolean;
   sensors: string[];
   focus: string | null;
+}
+
+export interface AppSettings {
+  thresholds: Thresholds;
+  offsets: CalibrationOffsets;
+  samplingRate: number;
+  soundEnabled: boolean;
+  notificationsEnabled: boolean;
+  clo?: number; // User selected clo value
 }

@@ -28,7 +28,8 @@ export const Header = ({ onExport, onOpenSettings }: { onExport: () => void, onO
     alerts, 
     clearAlerts,
     zenMode,
-    setZenMode
+    setZenMode,
+    isCachedData
   } = useDashboardStore();
   
   const [showAlertHistory, setShowAlertHistory] = useState(false);
@@ -58,6 +59,11 @@ export const Header = ({ onExport, onOpenSettings }: { onExport: () => void, onO
         <div className="flex items-center gap-4 px-4 py-2 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
           <div className="flex flex-col items-end">
             <div className="flex items-center gap-2 text-sm font-mono font-bold text-slate-700 dark:text-slate-200">
+              {isCachedData && (
+                <span className="text-[10px] bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-1.5 py-0.5 rounded-md mr-1">
+                  {t('cached')}
+                </span>
+              )}
               <Clock className="w-4 h-4 text-slate-400" />
               {currentTime.toLocaleTimeString()}
             </div>

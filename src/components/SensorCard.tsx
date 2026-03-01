@@ -2,7 +2,7 @@ import { memo, ReactNode, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowUp, ArrowDown } from 'lucide-react';
 import VanillaTilt from 'vanilla-tilt';
-import { useValueDelta } from '../useValueDelta';
+import { useValueDelta } from '../hooks/useValueDelta';
 import { MiniChart } from './Chart/MiniChart';
 import { formatValue } from '../utils/formatters';
 

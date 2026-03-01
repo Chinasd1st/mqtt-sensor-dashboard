@@ -15,6 +15,15 @@ export interface PMVResult {
   bg: string;
 }
 
+export const getSeasonalClo = (): number => {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now.getTime() - start.getTime();
+  const oneDay = 1000 * 60 * 60 * 24;
+  const dayOfYear = Math.floor(diff / oneDay);
+  return 0.75 + 0.25 * Math.cos(2 * Math.PI * (dayOfYear - 15) / 365);
+};
+
 export const calculatePMV = (ta: number, rh: number, options: PMVOptions = {}): PMVResult => {
   if (ta === undefined || rh === undefined) {
     return { pmv: 0, ppd: 0, status: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-100' };
@@ -24,19 +33,7 @@ export const calculatePMV = (ta: number, rh: number, options: PMVOptions = {}): 
   const vel = options.vel !== undefined ? options.vel : 0.1;
   const met = options.met !== undefined ? options.met : 1.1;
   
-  // Dynamic clothing level based on month
-  let defaultClo = 1.0;
-  const month = new Date().getMonth(); // 0-11
-  
-  if (month >= 5 && month <= 7) { // Jun, Jul, Aug (Summer)
-    defaultClo = 0.5;
-  } else if (month >= 2 && month <= 4) { // Mar, Apr, May (Spring)
-    defaultClo = 0.75;
-  } else if (month >= 8 && month <= 10) { // Sep, Oct, Nov (Autumn)
-    defaultClo = 0.75;
-  } else { // Dec, Jan, Feb (Winter)
-    defaultClo = 1.0;
-  }
+  const defaultClo = getSeasonalClo();
 
   const clo = options.clo !== undefined ? options.clo : defaultClo;
 

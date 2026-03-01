@@ -11,17 +11,33 @@ interface MiniChartProps {
 
 export const MiniChart = memo(({ history, dataKey, color, bgColor, title }: MiniChartProps) => {
   const chartData = useMemo(() => {
-    const recentHistory = history.slice(-30);
+    let recentHistory = history.slice(-30);
+    
+    // Generate placeholder curve if history is empty
+    if (recentHistory.length === 0) {
+      const now = new Date();
+      recentHistory = Array.from({ length: 30 }).map((_, i) => {
+        const time = new Date(now.getTime() - (29 - i) * 60000);
+        // Simple sine wave for placeholder
+        const val = Math.sin(i / 5) * 10 + 50; 
+        return {
+          time: time.toLocaleTimeString(),
+          [dataKey]: val
+        };
+      });
+    }
+
     return {
       labels: recentHistory.map((h: any) => h.time),
       datasets: [{
         label: title,
         data: recentHistory.map((h: any) => h[dataKey]),
-        borderColor: color,
-        backgroundColor: bgColor,
+        borderColor: history.length === 0 ? '#cbd5e1' : color, // Gray out placeholder
+        backgroundColor: history.length === 0 ? 'transparent' : bgColor,
         fill: true,
-        pointBackgroundColor: color,
-        pointBorderColor: color,
+        pointBackgroundColor: history.length === 0 ? '#cbd5e1' : color,
+        pointBorderColor: history.length === 0 ? '#cbd5e1' : color,
+        borderDash: history.length === 0 ? [5, 5] : [], // Dashed line for placeholder
       }]
     };
   }, [history, dataKey, title, color, bgColor]);
